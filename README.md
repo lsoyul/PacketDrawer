@@ -5,4 +5,4 @@ Packet drawing tools for tardis logs
  - NodeJS
  - Java
  - Plant UML
- - Grahviz
+ - Graphviz

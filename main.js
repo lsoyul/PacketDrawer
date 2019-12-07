@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var sanitizeHtml = require('sanitize-html');
 var template = require('./lib/template.js');
+var logToUML = require('./lib/logToPlantuml.js');
 var port = 3000;
 
 app.get('/', function(request, response){
@@ -43,8 +44,31 @@ app.get('/page/:pageId', function(request, response){
     });
 });
 
+app.get('/parse/:logFileName', function(request, response){
+    logToUML.parseToUML(`./data/logfiles/${request.params.logFileName}`, function(err, result){
+      fs.writeFile(`data/umlResult/${request.params.logFileName}_result`, result, 'utf8', function(err){
+        if (err !== null){
+          console.log(err);
+        }
+
+        var prettyHTML = template.HTML(
+          `${request.params.logFileName}_result`, 
+        `data/umlResult/${request.params.logFileName}_result`, 
+        "", 
+        `
+        <form>
+          <textarea name="umlbody" placeholder="umlbody" rows="50" cols="50">${result}</textarea>
+        </form>
+        `)
+
+        response.send(prettyHTML);
+      });
+  });
+  
+});
+
 app.listen(port, function() {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Packet Draw App listening on port ${port}`);
 });
   
 /*
