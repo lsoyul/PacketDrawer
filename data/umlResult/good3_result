@@ -1,0 +1,6 @@
+@startuml
+Client -> Server: RequestPacket
+Client <- Server: ResponsePacket
+Client --> Server: sample2
+Client <- Server: sample2
+@enduml
