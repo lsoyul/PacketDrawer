@@ -1,2 +1,8 @@
 # PacketDrawer
-Packet drawing tool with tardis logs
+Packet drawing tools for tardis logs
+
+* Used Libraries
+ - NodeJS
+ - Java
+ - Plant UML
+ - Grahviz
