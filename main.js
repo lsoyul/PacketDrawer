@@ -6,6 +6,8 @@ var logToUML = require('./lib/logToPlantuml.js');
 var process = require('child_process');
 var port = 3000;
 
+var ignoreMessages = ["ScrollMessageToC", "SeverTimeRequest", "ServerTimeReply", "InternalSocketClose", "InternalConnect"];
+
 app.use(express.static('data'));
 
 app.get('/', function(request, response){
@@ -22,13 +24,13 @@ app.get('/', function(request, response){
 });
 
 app.get('/parse/:logFileName', function(request, response){
-    logToUML.parseToUML(`./data/logfiles/${request.params.logFileName}`, function(err, result){
+    logToUML.parseToUML(`./data/logfiles/${request.params.logFileName}`, ignoreMessages, function(err, result){
       fs.writeFile(`data/umlResult/${request.params.logFileName}_result`, result, 'utf8', function(err){
         if (err !== null){
           console.log(err);
         }
 
-        var command = `java -jar lib/plantuml.jar -o "../pngResult" "./data/umlResult/${request.params.logFileName}_result"`;
+        var command = `java -DPLANTUML_LIMIT_SIZE=8192 -jar lib/plantuml.jar -o "../pngResult" "./data/umlResult/${request.params.logFileName}_result"`;
         //command = 'java -version';
         console.log("command : " + command);
         process.exec(command,
