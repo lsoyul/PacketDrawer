@@ -15,7 +15,7 @@ app.get('/', function(request, response){
     var list = template.list(filelist);
     var html = template.HTML(title, subTitle,
       list,
-      "");
+      "", "");
 
       response.send(html);
   });
@@ -47,8 +47,8 @@ app.get('/parse/:logFileName', function(request, response){
           `, 
           `
           <img src="../pngResult/${request.params.logFileName}_result.png">
-          <a class="btn btn-primary ml-3" href="/">Go To Home</a>
-          `
+          `,
+          `<a class="btn btn-primary ml-3" href="/">Go To Home</a>`
           )
 
           response.send(prettyHTML);

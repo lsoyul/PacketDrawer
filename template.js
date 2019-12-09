@@ -1,5 +1,5 @@
 module.exports = {
-  HTML:function(title, subTitle, firstContent, secondContent){
+  HTML:function(title, subTitle, firstContent, secondContent, extras){
     return `
     <!doctype html>
     <html>
@@ -26,6 +26,9 @@ module.exports = {
           </div>
           <div class="col-sm">
             ${secondContent}
+          </div>
+          <div class ="col-sm">
+            ${extras}
           </div>
         </div>
       </div>
