@@ -4,6 +4,7 @@ var fs = require('fs');
 var template = require('./template.js');
 var logToUML = require('./lib/logToPlantuml.js');
 var process = require('child_process');
+var plantumlEncoder = require('plantuml-encoder');
 var port = 3000;
 
 var ignoreMessages = ["ScrollMessageToC", "SeverTimeRequest", "ServerTimeReply", "InternalSocketClose", "InternalConnect"];
@@ -30,6 +31,24 @@ app.get('/parse/:logFileName', function(request, response){
           console.log(err);
         }
 
+        var encoded = plantumlEncoder.encode(result);
+        var url = 'http://www.plantuml.com/plantuml/svg/' + encoded;
+
+        var prettyHTML = template.HTML(
+          `Parse Result`, 
+        `data/umlResult/${request.params.logFileName}_result`, 
+        `
+        <form>
+          <textarea name="umlbody" placeholder="umlbody" rows="50" cols="50">${result}</textarea>
+        </form>
+        `, 
+        `
+        <img src="${url}">
+        `,
+        `<a class="btn btn-primary ml-3" href="/">Go To Home</a>`
+        )
+
+/*
         var command = `java -DPLANTUML_LIMIT_SIZE=8192 -jar lib/plantuml.jar -o "../pngResult" "./data/umlResult/${request.params.logFileName}_result"`;
         //command = 'java -version';
         console.log("command : " + command);
@@ -52,14 +71,13 @@ app.get('/parse/:logFileName', function(request, response){
           `,
           `<a class="btn btn-primary ml-3" href="/">Go To Home</a>`
           )
-
+*/
           response.send(prettyHTML);
         });
 
       });
   });
   
-});
 
 app.listen(port, function() {
   console.log(`Packet Draw App listening on port ${port}`);
