@@ -1,13 +1,27 @@
 var express = require('express');
-var app = express();
+var dateFormat = require('dateformat');
 var fs = require('fs');
 var template = require('./template.js');
 var logToUML = require('./lib/logToPlantuml.js');
-var process = require('child_process');
 var plantumlEncoder = require('plantuml-encoder');
+var multer = require('multer');
 var port = 3000;
 
+var app = express();
+
 var ignoreMessages = ["ScrollMessageToC", "SeverTimeRequest", "ServerTimeReply", "InternalSocketClose", "InternalConnect"];
+
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb){
+    cb(null, 'data/logfiles')
+  },
+  filename: function (req, file, cb){
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+var upload = multer({ storage: storage});
 
 app.use(express.static('data'));
 
@@ -18,7 +32,17 @@ app.get('/', function(request, response){
     var list = template.list(filelist);
     var html = template.HTML(title, subTitle,
       list,
-      "", "");
+      `
+      <form action="/data/logfiles/uploads", method="POST", enctype="multipart/form-data">
+        <div class="form-group">
+          <label> <p class="lead ml-2">Select Logfiles<p></label>
+          <input type="file" class="form-control-file" name="userfile" multiple>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Uploads</button>
+        </div>        
+      </form>
+      `, "");
 
       response.send(html);
   });
@@ -73,11 +97,16 @@ app.get('/parse/:logFileName', function(request, response){
           )
 */
           response.send(prettyHTML);
-        });
-
       });
-  });
-  
+    });
+});
+
+app.post('/data/logfiles/uploads', upload.array('userfile', 50), function(req, res, next){
+  console.log(req.files);
+
+  res.redirect('/');
+});
+
 
 app.listen(port, function() {
   console.log(`Packet Draw App listening on port ${port}`);
