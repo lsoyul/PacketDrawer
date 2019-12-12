@@ -60,7 +60,7 @@ app.get('/', function(request, response){
   });
 });
 
-app.get('/parse/direct', function(req, res){
+app.post('/parse/direct', function(req, res){
   var body = '';
   
   req.on('data', function(data){
@@ -71,10 +71,7 @@ app.get('/parse/direct', function(req, res){
 
     var post = qs.parse(body);
     logToUML.parseToUML_String(post.description, ignoreMessages, function(err, result){
-      if (err !== null){
-        console.log(err);
-      }
-
+ 
       var encoded = plantumlEncoder.encode(result);
       var url = 'http://www.plantuml.com/plantuml/svg/' + encoded;
 
